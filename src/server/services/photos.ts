@@ -1,6 +1,7 @@
 import type { UserRole } from "@prisma/client";
 
 import type { PhotoPayload, PhotoTarget } from "@/lib/validation/photos";
+import { extractCompanyIdFromPath } from "@/lib/storage-utils";
 import { createTenantClient } from "@/server/db/tenant";
 import { deleteMedia, uploadMedia, type MediaTargetType } from "@/server/storage/media";
 import { serviceError, serviceOk, type ServiceResult } from "./result";
@@ -227,6 +228,19 @@ export async function deletePhoto(
     where: { companyId, id: attachmentId },
   });
   if (deleted.count === 0) return serviceError("Foto não encontrada.");
+
+  // Defense in depth: valida que o path pertence à empresa antes de
+  // executar a operação destrutiva no Storage (skill: destructive path operations).
+  // Data URLs (dev fallback) não têm path — são puladas por deleteMedia().
+  if (!attachment.storagePath.startsWith("data:")) {
+    const pathCompanyId = extractCompanyIdFromPath(attachment.storagePath);
+    if (pathCompanyId !== companyId) {
+      console.error(
+        `deletePhoto: path de outra empresa detectado (path=${attachment.storagePath}, expected=${companyId}) — bloqueado.`,
+      );
+      return serviceError("Não foi possível remover a foto. Contate o suporte.");
+    }
+  }
 
   // Remove do Storage (best-effort; se falhar, o registro já saiu do banco)
   await deleteMedia(attachment.storagePath);
