@@ -15,14 +15,27 @@ export default function ForgotPasswordPage() {
       </Link>
       <Card>
         <CardHeader>
-          <CardTitle className="text-2xl">Redefinir acesso</CardTitle>
+          <CardTitle className="text-2xl">Esqueceu a senha?</CardTitle>
           <CardDescription>
-            Em breve você poderá solicitar um link de redefinição por aqui. Por enquanto, peça ao
-            administrador da sua empresa para gerar um novo link.
+            O administrador da sua empresa pode gerar um link de redefinição para você.
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <Link href="/login" className="text-sm font-medium underline-offset-4 hover:underline">
+        <CardContent className="flex flex-col gap-4">
+          <div className="rounded-lg border bg-muted/30 p-3 text-sm">
+            <p className="font-medium">O que fazer:</p>
+            <ol className="mt-2 list-decimal space-y-1 pl-4 text-muted-foreground">
+              <li>
+                Peça ao administrador para abrir o menu{" "}
+                <strong>Equipe → sua ficha → Gerar link de redefinição</strong>.
+              </li>
+              <li>Ele copia o link e envia para você via WhatsApp.</li>
+              <li>Abra o link e defina sua nova senha.</li>
+            </ol>
+          </div>
+          <Link
+            href="/login"
+            className="text-sm font-medium underline-offset-4 hover:underline"
+          >
             Voltar para o login
           </Link>
         </CardContent>

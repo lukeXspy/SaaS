@@ -6,6 +6,8 @@ export type ActionState = {
   error?: string;
   success?: string;
   fieldErrors?: Record<string, string[]>;
+  /** Dados extras do action (ex.: link de convite, link de reset). */
+  data?: Record<string, string>;
 };
 
 export const initialActionState: ActionState = {};

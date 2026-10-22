@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Building, ClipboardList, FileText, LayoutDashboard, Users, Wrench } from "lucide-react";
+import { Building, ClipboardList, FileText, LayoutDashboard, UserCog, Users, Wrench } from "lucide-react";
 
 import { cn } from "cn";
 
@@ -13,6 +13,7 @@ const items = [
   { href: "/app/ativos", label: "Ativos", icon: Building, adminOnly: true },
   { href: "/app/checklists", label: "Checklists", icon: ClipboardList, adminOnly: true },
   { href: "/app/inspecoes", label: "Inspeções", icon: FileText, adminOnly: true },
+  { href: "/app/tecnicos", label: "Equipe", icon: UserCog, adminOnly: true },
 ] as const;
 
 export function AppNav({ isAdmin }: { isAdmin: boolean }) {
