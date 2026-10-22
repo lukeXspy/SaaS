@@ -117,9 +117,9 @@ export async function createInvite(
 ): Promise<ServiceResult<{ inviteLink: string; email: string; role: string }>> {
   const db = createTenantClient(companyId);
 
-  // Verifica se já existe usuário ativo com este e-mail
+  // Verifica se já existe usuário ativo com este e-mail (na mesma empresa)
   const existing = await db.user.findFirst({
-    where: { email: input.email, isActive: true },
+    where: { companyId, email: input.email, isActive: true },
     select: { id: true },
   });
   if (existing) {
@@ -256,7 +256,8 @@ export async function generateResetLink(
   if (!user) return serviceError("Usuário não encontrado.");
 
   // Invalida tokens anteriores não usados
-  await db.passwordResetToken.updateMany({
+  // (PasswordResetToken não tem companyId — usa cliente global, já validado acima)
+  await prisma.passwordResetToken.updateMany({
     where: { userId: user.id, usedAt: null, expiresAt: { gt: new Date() } },
     data: { expiresAt: new Date() },
   });
