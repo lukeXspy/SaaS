@@ -7,6 +7,7 @@ import { cn } from "cn";
 
 const items = [
   { href: "/app", label: "Painel", adminOnly: false },
+  { href: "/app/ordens", label: "Ordens", adminOnly: true },
   { href: "/app/clientes", label: "Clientes", adminOnly: true },
   { href: "/app/ativos", label: "Ativos", adminOnly: true },
 ] as const;

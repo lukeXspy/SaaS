@@ -14,7 +14,10 @@ export default auth((request) => {
   const isLoggedIn = Boolean(request.auth?.user);
 
   const isPrivate =
-    pathname.startsWith("/app") || pathname.startsWith("/a/") || pathname === "/a";
+    pathname.startsWith("/app") ||
+    pathname.startsWith("/campo") ||
+    pathname.startsWith("/a/") ||
+    pathname === "/a";
 
   if (isPrivate && !isLoggedIn) {
     const url = new URL("/login", request.nextUrl.origin);
@@ -30,5 +33,5 @@ export default auth((request) => {
 });
 
 export const config = {
-  matcher: ["/app/:path*", "/a/:path*", "/login"],
+  matcher: ["/app/:path*", "/campo/:path*", "/a/:path*", "/login"],
 };

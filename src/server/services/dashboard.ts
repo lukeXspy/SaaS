@@ -29,19 +29,3 @@ export async function getAdminSummary(companyId: string): Promise<AdminSummary> 
 
   return { activeClients, activeSites, activeAssets, openWorkOrders, overdueWorkOrders };
 }
-
-export async function getTechnicianSummary(companyId: string, userId: string) {
-  const db = createTenantClient(companyId);
-  const openStatuses = ["OPEN", "IN_PROGRESS", "WAITING_PARTS"] as const;
-
-  const [openAssigned, waitingParts] = await Promise.all([
-    db.workOrder.count({
-      where: { companyId, assignedToId: userId, status: { in: [...openStatuses] } },
-    }),
-    db.workOrder.count({
-      where: { companyId, assignedToId: userId, status: "WAITING_PARTS" },
-    }),
-  ]);
-
-  return { openAssigned, waitingParts };
-}

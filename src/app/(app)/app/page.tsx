@@ -1,13 +1,13 @@
 import { ArrowRight, Building2, ClipboardList, MapPin, Plus, Wrench } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
-import { StatusBadge } from "@/components/status-badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { firstName } from "@/lib/format";
 import { requireUser } from "@/server/auth/session";
-import { getAdminSummary, getTechnicianSummary } from "@/server/services/dashboard";
+import { getAdminSummary } from "@/server/services/dashboard";
 
 export const metadata: Metadata = {
   title: "Painel",
@@ -15,22 +15,9 @@ export const metadata: Metadata = {
 
 export default async function DashboardPage() {
   const user = await requireUser();
-  const isAdmin = user.role === "ADMIN";
+  if (user.role !== "ADMIN") redirect("/campo");
 
-  return (
-    <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">Olá, {firstName(user.name)}</h1>
-        <p className="text-sm text-muted-foreground">{user.companyName}</p>
-      </div>
-
-      {isAdmin ? <AdminDashboard companyId={user.companyId} /> : <TechnicianDashboard userId={user.id} companyId={user.companyId} />}
-    </div>
-  );
-}
-
-async function AdminDashboard({ companyId }: { companyId: string }) {
-  const summary = await getAdminSummary(companyId);
+  const summary = await getAdminSummary(user.companyId);
 
   const stats = [
     {
@@ -54,35 +41,32 @@ async function AdminDashboard({ companyId }: { companyId: string }) {
     {
       label: "OS em aberto",
       value: summary.openWorkOrders,
-      href: null,
+      href: "/app/ordens" as const,
       icon: ClipboardList,
     },
   ];
 
   return (
-    <>
+    <div className="flex flex-col gap-6">
+      <div>
+        <h1 className="text-2xl font-semibold tracking-tight">Olá, {firstName(user.name)}</h1>
+        <p className="text-sm text-muted-foreground">{user.companyName}</p>
+      </div>
+
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        {stats.map((stat) => {
-          const content = (
+        {stats.map((stat) => (
+          <Link
+            key={stat.label}
+            href={stat.href}
+            className="rounded-xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+          >
             <Card className="h-full p-4">
               <stat.icon aria-hidden className="size-4 text-muted-foreground" />
               <p className="mt-3 text-2xl font-semibold tabular-nums">{stat.value}</p>
               <p className="text-xs text-muted-foreground">{stat.label}</p>
             </Card>
-          );
-
-          return stat.href ? (
-            <Link
-              key={stat.label}
-              href={stat.href}
-              className="rounded-xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
-            >
-              {content}
-            </Link>
-          ) : (
-            <div key={stat.label}>{content}</div>
-          );
-        })}
+          </Link>
+        ))}
       </div>
 
       {summary.overdueWorkOrders > 0 ? (
@@ -92,9 +76,11 @@ async function AdminDashboard({ companyId }: { companyId: string }) {
             <p>
               <strong>{summary.overdueWorkOrders}</strong>{" "}
               {summary.overdueWorkOrders === 1
-                ? "ordem de serviço está atrasada"
-                : "ordens de serviço estão atrasadas"}
-              . O acompanhamento completo estará disponível no módulo de ordens.
+                ? "ordem de serviço está atrasada."
+                : "ordens de serviço estão atrasadas."}{" "}
+              <Link href="/app/ordens" className="underline underline-offset-4">
+                Ver ordens
+              </Link>
             </p>
           </CardContent>
         </Card>
@@ -103,6 +89,10 @@ async function AdminDashboard({ companyId }: { companyId: string }) {
       <section className="flex flex-col gap-3">
         <h2 className="text-base font-semibold">Atalhos</h2>
         <div className="flex flex-wrap gap-2">
+          <Link href="/app/ordens/nova" className={buttonVariants({ variant: "outline" })}>
+            <Plus aria-hidden />
+            Nova OS
+          </Link>
           <Link href="/app/clientes/novo" className={buttonVariants({ variant: "outline" })}>
             <Plus aria-hidden />
             Novo cliente
@@ -111,43 +101,12 @@ async function AdminDashboard({ companyId }: { companyId: string }) {
             <Plus aria-hidden />
             Novo ativo
           </Link>
-          <Link href="/app/ativos" className={buttonVariants({ variant: "outline" })}>
-            Ver ativos
+          <Link href="/app/ordens" className={buttonVariants({ variant: "outline" })}>
+            Ver ordens
             <ArrowRight aria-hidden />
           </Link>
         </div>
       </section>
-    </>
-  );
-}
-
-async function TechnicianDashboard({
-  companyId,
-  userId,
-}: {
-  companyId: string;
-  userId: string;
-}) {
-  const summary = await getTechnicianSummary(companyId, userId);
-
-  return (
-    <Card>
-      <CardContent className="flex flex-col gap-3">
-        <div className="flex flex-wrap items-center gap-2">
-          <StatusBadge tone={summary.openAssigned > 0 ? "info" : "neutral"}>
-            {summary.openAssigned} OS em aberto
-          </StatusBadge>
-          {summary.waitingParts > 0 ? (
-            <StatusBadge tone="warning">
-              {summary.waitingParts} aguardando peças
-            </StatusBadge>
-          ) : null}
-        </div>
-        <p className="text-sm text-muted-foreground">
-          A área de campo, com a lista das suas ordens de serviço e a execução no celular, será
-          liberada no módulo de ordens de serviço.
-        </p>
-      </CardContent>
-    </Card>
+    </div>
   );
 }
