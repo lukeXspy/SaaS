@@ -1,4 +1,4 @@
-import { ArrowLeft, CheckCircle2, ClipboardList, MapPin, XCircle } from "lucide-react";
+import { ArrowLeft, CheckCircle2, ClipboardList, FileText, MapPin, XCircle } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -52,13 +52,24 @@ export default async function FieldWorkOrderPage({ params }: PageProps<"/campo/o
 
   return (
     <div className="flex flex-col gap-5">
-      <Link
-        href="/campo"
-        className="inline-flex w-fit items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-      >
-        <ArrowLeft aria-hidden className="size-4" />
-        Voltar para meu dia
-      </Link>
+      <div className="flex items-center justify-between gap-2">
+        <Link
+          href="/campo"
+          className="inline-flex w-fit items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <ArrowLeft aria-hidden className="size-4" />
+          Voltar para meu dia
+        </Link>
+        <a
+          href={`/api/ordens/${workOrder.id}/pdf`}
+          target="_blank"
+          rel="noreferrer"
+          className={buttonVariants({ variant: "outline", size: "sm" })}
+        >
+          <FileText aria-hidden />
+          PDF
+        </a>
+      </div>
 
       <PageHeader
         title={workOrder.title}

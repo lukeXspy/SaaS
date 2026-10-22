@@ -1,4 +1,4 @@
-import { ArrowLeft, MapPin, Pencil, PlayCircle } from "lucide-react";
+import { ArrowLeft, FileText, MapPin, Pencil, PlayCircle } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -68,6 +68,15 @@ export default async function WorkOrderDetailPage({ params }: PageProps<"/app/or
       />
 
       <div className="flex flex-wrap gap-2">
+        <a
+          href={`/api/ordens/${workOrder.id}/pdf`}
+          target="_blank"
+          rel="noreferrer"
+          className={buttonVariants({ variant: "outline", size: "sm" })}
+        >
+          <FileText aria-hidden />
+          Abrir PDF
+        </a>
         {!terminal ? (
           <>
             <Link

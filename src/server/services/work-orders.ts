@@ -24,7 +24,7 @@ type Viewer = { userId: string; role: UserRole };
 
 const listInclude = {
   client: { select: { id: true, name: true } },
-  site: { select: { id: true, name: true } },
+  site: { select: { id: true, name: true, city: true, state: true } },
   asset: { select: { id: true, tag: true, name: true } },
   assignedTo: { select: { id: true, name: true } },
 } as const;
