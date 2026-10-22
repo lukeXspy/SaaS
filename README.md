@@ -49,13 +49,70 @@ A empresa B existe para provar o isolamento entre tenants.
 | --- | --- |
 | `npm run dev` | Servidor de desenvolvimento |
 | `npm run build` | Build de produção |
-| `npm run typecheck` | TypeScript sem emitir |
 | `npm run lint` | ESLint |
-| `npm test` | Testes (Vitest) |
+| `npm run typecheck` | TypeScript strict |
+| `npm test` | Vitest (testes unitários) |
 | `npm run db:local` | PostgreSQL embarcado (porta 5433) |
-| `npm run db:deploy` | Aplica migrations pendentes |
+| `npm run db:deploy` | Aplica migrations |
 | `npm run db:seed` | Popula dados de demonstração |
-| `npm run db:studio` | Prisma Studio |
+| `npm run db:studio` | Prisma Studio (GUI do banco) |
+| `npm run media:migrate` | Migra fotos/assinaturas para o Supabase Storage |
+| `npm run supabase:test` | Testa conexão com o Supabase |
+
+## Deploy no Supabase (produção)
+
+### 1. Criar projeto
+
+1. Acesse [supabase.com](https://supabase.com) → New Project
+2. Escolha a região **South America (São Paulo)**
+3. Defina a senha do banco
+4. Aguarde o provisionamento (pode levar 5-10 min)
+
+### 2. Obter credenciais
+
+```bash
+# Testa a conexão (mostra as URLs quando a pooler registrar o projeto)
+npm run supabase:test
+```
+
+Ou manualmente no dashboard:
+
+| Variável | Onde encontrar |
+| --- | --- |
+| `DATABASE_URL` | Settings → Database → Connection string (pooling, porta 6543) |
+| `DIRECT_URL` | Settings → Database → Connection string (direct, porta 5432) |
+| `SUPABASE_URL` | `https://[project-ref].supabase.co` |
+| `SUPABASE_SERVICE_ROLE_KEY` | Settings → API → service_role (secret) |
+
+### 3. Criar bucket de Storage
+
+No SQL Editor do Supabase, rode:
+
+```sql
+INSERT INTO storage.buckets (id, name, public)
+VALUES ('manutenza-media', 'manutenza-media', false)
+ON CONFLICT (id) DO NOTHING;
+```
+
+### 4. Aplicar migrations e seed
+
+```bash
+# No .env, troque DATABASE_URL/DIRECT_URL pelas URLs do Supabase
+npm run db:deploy
+npm run db:seed
+```
+
+### 5. Migrar mídia (opcional — fotos/assinaturas locais → Storage)
+
+```bash
+npm run media:migrate
+```
+
+### 6. Deploy (Netlify)
+
+1. Conecte o repositório GitHub ao Netlify
+2. Configure as variáveis de ambiente (todas do `.env`)
+3. Deploy automático a cada push para `main`
 
 ## Variáveis de ambiente
 
