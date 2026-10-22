@@ -7,6 +7,7 @@ import type {
   WorkOrderItemInput,
 } from "@/lib/validation/work-orders";
 import { createTenantClient } from "@/server/db/tenant";
+import { uploadMedia } from "@/server/storage/media";
 import { serviceError, serviceOk, type ServiceResult } from "./result";
 
 type Actor = { userId: string; role: UserRole };
@@ -271,6 +272,21 @@ export async function completeWorkOrder(
     execution.laborMinutes ??
     (startedAt ? Math.max(1, Math.round((now.getTime() - startedAt.getTime()) / 60000)) : null);
 
+  // Faz upload da assinatura para o Storage (ou usa data URL como fallback em dev)
+  const signatureBuffer = Buffer.from(
+    input.signatureDataUrl.slice(input.signatureDataUrl.indexOf(",") + 1),
+    "base64",
+  );
+  const signatureUpload = await uploadMedia(
+    companyId,
+    "signatures",
+    id,
+    signatureBuffer,
+    "image/png",
+    input.signatureDataUrl,
+  );
+  if (!signatureUpload.ok) return signatureUpload;
+
   const updated = await db.workOrder.updateMany({
     where: { companyId, id, status: "IN_PROGRESS" },
     data: { status: "DONE", completedAt: now },
@@ -286,7 +302,7 @@ export async function completeWorkOrder(
       laborMinutes,
       signedByName: input.signedByName,
       signedAt: now,
-      signatureUrl: input.signatureDataUrl,
+      signatureUrl: signatureUpload.data.storagePath,
       ...(input.observations ? { observations: input.observations } : {}),
     },
   });

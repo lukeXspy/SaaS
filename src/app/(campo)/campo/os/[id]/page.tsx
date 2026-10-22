@@ -4,6 +4,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { PageHeader } from "@/components/page-header";
+import { PhotoGallery } from "@/components/photo-gallery";
+import { PhotoUploader } from "@/components/photo-uploader";
 import { StatusBadge } from "@/components/status-badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -24,6 +26,10 @@ import {
 import { WorkOrderStatusActions } from "@/components/work-order-status-actions";
 import { requireUser } from "@/server/auth/session";
 import { getWorkOrder } from "@/server/services/work-orders";
+import {
+  resolveAttachmentUrls,
+  resolveExecutionSignatureUrl,
+} from "@/server/storage/resolve";
 import { ExecutionForm } from "./execution-form";
 import { ItemsManager } from "./items-manager";
 
@@ -41,6 +47,10 @@ export default async function FieldWorkOrderPage({ params }: PageProps<"/campo/o
 
   if (!workOrder) notFound();
 
+  const [photoUrls, signatureUrl] = await Promise.all([
+    resolveAttachmentUrls(workOrder.attachments),
+    resolveExecutionSignatureUrl(workOrder.execution?.signatureUrl ?? null),
+  ]);
   const now = new Date();
   const terminal = workOrder.status === "DONE" || workOrder.status === "CANCELED";
   const canExecute = workOrder.status === "IN_PROGRESS" || workOrder.status === "WAITING_PARTS";
@@ -158,6 +168,16 @@ export default async function FieldWorkOrderPage({ params }: PageProps<"/campo/o
 
           <Card>
             <CardHeader>
+              <CardTitle>Fotos</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-3">
+              <PhotoUploader target={{ workOrderId: workOrder.id }} />
+              <PhotoGallery photos={photoUrls} />
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
               <CardTitle>Serviços e peças</CardTitle>
             </CardHeader>
             <CardContent>
@@ -213,10 +233,10 @@ export default async function FieldWorkOrderPage({ params }: PageProps<"/campo/o
                     <p className="text-xs text-muted-foreground">
                       {formatDateTime(workOrder.execution.signedAt)}
                     </p>
-                    {workOrder.execution.signatureUrl?.startsWith("data:image/") ? (
+                    {signatureUrl ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
-                        src={workOrder.execution.signatureUrl}
+                        src={signatureUrl}
                         alt={`Assinatura de ${workOrder.execution.signedByName}`}
                         className="mt-2 h-20 rounded border bg-white object-contain"
                       />
@@ -255,6 +275,17 @@ export default async function FieldWorkOrderPage({ params }: PageProps<"/campo/o
               )}
             </CardContent>
           </Card>
+
+          {photoUrls.length > 0 ? (
+            <Card>
+              <CardHeader>
+                <CardTitle>Fotos</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <PhotoGallery photos={photoUrls} canDelete={false} />
+              </CardContent>
+            </Card>
+          ) : null}
         </>
       ) : null}
 

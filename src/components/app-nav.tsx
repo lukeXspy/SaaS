@@ -2,14 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Building, ClipboardList, FileText, LayoutDashboard, Users, Wrench } from "lucide-react";
 
 import { cn } from "cn";
 
 const items = [
-  { href: "/app", label: "Painel", adminOnly: false },
-  { href: "/app/ordens", label: "Ordens", adminOnly: true },
-  { href: "/app/clientes", label: "Clientes", adminOnly: true },
-  { href: "/app/ativos", label: "Ativos", adminOnly: true },
+  { href: "/app", label: "Painel", icon: LayoutDashboard, adminOnly: false },
+  { href: "/app/ordens", label: "Ordens", icon: Wrench, adminOnly: true },
+  { href: "/app/clientes", label: "Clientes", icon: Users, adminOnly: true },
+  { href: "/app/ativos", label: "Ativos", icon: Building, adminOnly: true },
+  { href: "/app/checklists", label: "Checklists", icon: ClipboardList, adminOnly: true },
+  { href: "/app/inspecoes", label: "Inspeções", icon: FileText, adminOnly: true },
 ] as const;
 
 export function AppNav({ isAdmin }: { isAdmin: boolean }) {
@@ -29,12 +32,13 @@ export function AppNav({ isAdmin }: { isAdmin: boolean }) {
             href={item.href}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "rounded-lg px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors",
+              "rounded-lg px-3 py-2 text-sm font-medium whitespace-nowrap transition-colors flex items-center gap-1.5",
               active
                 ? "bg-muted text-foreground"
                 : "text-muted-foreground hover:bg-muted/60 hover:text-foreground",
             )}
           >
+            <item.icon aria-hidden className="size-4" />
             {item.label}
           </Link>
         );

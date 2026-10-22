@@ -68,12 +68,12 @@ model User {
   createdAt    DateTime  @default(now())
   updatedAt    DateTime  @updatedAt
 
-  assignedWorkOrders WorkOrder[]             @relation("WorkOrderAssignee")
-  createdWorkOrders  WorkOrder[]             @relation("WorkOrderCreator")
+  assignedWorkOrders WorkOrder[]              @relation("WorkOrderAssignee")
+  createdWorkOrders  WorkOrder[]              @relation("WorkOrderCreator")
   executions         WorkOrderExecution[]
-  inspections        Inspection[]            @relation("InspectionTechnician")
+  inspections        Inspection[]             @relation("InspectionTechnician")
   attachments        Attachment[]
-  invitesSent        Invite[]                @relation("InviteSender")
+  invitesSent        Invite[]                 @relation("InviteSender")
   statusChanges      WorkOrderStatusHistory[]
   resetTokens        PasswordResetToken[]
 
@@ -139,9 +139,9 @@ model Client {
 model Site {
   id           String   @id @default(cuid())
   companyId    String
-  company      Company   @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  company      Company  @relation(fields: [companyId], references: [id], onDelete: Restrict)
   clientId     String
-  client       Client    @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  client       Client   @relation(fields: [clientId], references: [id], onDelete: Restrict)
   name         String
   addressLine  String
   number       String?
@@ -204,15 +204,15 @@ model Asset {
 // ─────────────────────────────────────────────────────────────
 
 model ChecklistTemplate {
-  id          String        @id @default(cuid())
+  id          String         @id @default(cuid())
   companyId   String
-  company     Company       @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  company     Company        @relation(fields: [companyId], references: [id], onDelete: Restrict)
   name        String
   description String?
   category    AssetCategory?
-  isActive    Boolean       @default(true)
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  isActive    Boolean        @default(true)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
 
   items       ChecklistTemplateItem[]
   inspections Inspection[]
@@ -250,22 +250,22 @@ model ChecklistTemplateItem {
 // ─────────────────────────────────────────────────────────────
 
 model WorkOrder {
-  id           String            @id @default(cuid())
-  companyId    String
-  company      Company           @relation(fields: [companyId], references: [id], onDelete: Restrict)
-  number       Int
-  title        String
-  description  String?
-  type         WorkOrderType
-  priority     WorkOrderPriority @default(MEDIUM)
-  status       WorkOrderStatus   @default(OPEN)
+  id          String            @id @default(cuid())
+  companyId   String
+  company     Company           @relation(fields: [companyId], references: [id], onDelete: Restrict)
+  number      Int
+  title       String
+  description String?
+  type        WorkOrderType
+  priority    WorkOrderPriority @default(MEDIUM)
+  status      WorkOrderStatus   @default(OPEN)
 
   clientId String
-  client   Client @relation(fields: [clientId], references: [id], onDelete: Restrict)
+  client   Client  @relation(fields: [clientId], references: [id], onDelete: Restrict)
   siteId   String
-  site     Site   @relation(fields: [siteId], references: [id], onDelete: Restrict)
+  site     Site    @relation(fields: [siteId], references: [id], onDelete: Restrict)
   assetId  String?
-  asset    Asset? @relation(fields: [assetId], references: [id], onDelete: Restrict)
+  asset    Asset?  @relation(fields: [assetId], references: [id], onDelete: Restrict)
 
   assignedToId String?
   assignedTo   User?   @relation("WorkOrderAssignee", fields: [assignedToId], references: [id], onDelete: Restrict)
@@ -429,25 +429,25 @@ model Attachment {
   companyId   String
   company     Company        @relation(fields: [companyId], references: [id], onDelete: Restrict)
   kind        AttachmentKind
-  storageKey  String         @unique
+  storagePath String
   fileName    String
   mimeType    String
-  sizeBytes   Int
+  fileSize    Int
   width       Int?
   height      Int?
 
   workOrderId          String?
-  workOrder            WorkOrder?           @relation(fields: [workOrderId], references: [id], onDelete: SetNull)
+  workOrder            WorkOrder?          @relation(fields: [workOrderId], references: [id], onDelete: SetNull)
   executionId          String?
-  execution            WorkOrderExecution?  @relation(fields: [executionId], references: [id], onDelete: SetNull)
+  execution            WorkOrderExecution? @relation(fields: [executionId], references: [id], onDelete: SetNull)
   inspectionId         String?
-  inspection           Inspection?          @relation(fields: [inspectionId], references: [id], onDelete: SetNull)
+  inspection           Inspection?         @relation(fields: [inspectionId], references: [id], onDelete: SetNull)
   inspectionResponseId String?
-  inspectionResponse   InspectionResponse?  @relation(fields: [inspectionResponseId], references: [id], onDelete: SetNull)
+  inspectionResponse   InspectionResponse? @relation(fields: [inspectionResponseId], references: [id], onDelete: SetNull)
   assetId              String?
-  asset                Asset?               @relation(fields: [assetId], references: [id], onDelete: SetNull)
+  asset                Asset?              @relation(fields: [assetId], references: [id], onDelete: SetNull)
   uploadedById         String?
-  uploadedBy           User?                @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
+  uploadedBy           User?               @relation(fields: [uploadedById], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
 

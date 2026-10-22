@@ -25,6 +25,20 @@ export type CompanyPdfData = {
   logoUrl: string | null;
 };
 
+export type PdfPhoto = {
+  id: string;
+  /** Data URL (bytes baixados do Storage) ou data URL original (dev). */
+  url: string;
+  fileName: string;
+};
+
+export type MediaPdfData = {
+  /** Fotos resolvidas como data URLs para o PDF. */
+  photos: PdfPhoto[];
+  /** Assinatura resolvida como data URL, ou null. */
+  signatureUrl: string | null;
+};
+
 const styles = StyleSheet.create({
   page: {
     paddingTop: 32,
@@ -114,6 +128,8 @@ const styles = StyleSheet.create({
     padding: 6,
     minHeight: 74,
   },
+  photoGrid: { flexDirection: "row", flexWrap: "wrap", gap: 6 },
+  photo: { width: "48%", height: 118, objectFit: "cover", borderRadius: 4 },
   signatureImage: { height: 42, objectFit: "contain", marginBottom: 3 },
   signatureName: { fontSize: 8.5, fontFamily: "Helvetica-Bold" },
   signatureHint: { fontSize: 7, color: "#64748b" },
@@ -148,12 +164,16 @@ function copyText(value: string | null | undefined, fallback = "—") {
 export function WorkOrderPdf({
   workOrder,
   company,
+  media,
 }: {
   workOrder: WorkOrderPdfData;
   company: CompanyPdfData;
+  media: MediaPdfData;
 }) {
   const generatedAt = formatDateTime(new Date());
   const execution = workOrder.execution;
+  const photos = media.photos.slice(0, 8);
+  const signatureUrl = media.signatureUrl;
 
   return (
     <Document
@@ -307,13 +327,25 @@ export function WorkOrderPdf({
           )}
         </View>
 
+        {photos.length > 0 ? (
+          <View style={styles.section}>
+            <Text style={styles.sectionTitle}>Fotos</Text>
+            <View style={styles.photoGrid}>
+              {photos.map((photo) => (
+                // eslint-disable-next-line jsx-a11y/alt-text -- componente do React PDF, não é uma tag HTML.
+                <Image key={photo.id} src={photo.url} style={styles.photo} />
+              ))}
+            </View>
+          </View>
+        ) : null}
+
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>Assinatura</Text>
           <View style={styles.signatureRow}>
             <View style={styles.signatureBox}>
-              {execution?.signatureUrl?.startsWith("data:image/") ? (
+              {signatureUrl ? (
                 // eslint-disable-next-line jsx-a11y/alt-text -- componente do React PDF, não é uma tag HTML.
-                <Image src={execution.signatureUrl} style={styles.signatureImage} />
+                <Image src={signatureUrl} style={styles.signatureImage} />
               ) : (
                 <Text style={styles.signatureHint}>Assinatura do cliente</Text>
               )}
@@ -348,6 +380,9 @@ export function WorkOrderPdf({
 export function renderWorkOrderPdf(
   workOrder: WorkOrderPdfData,
   company: CompanyPdfData,
+  media: MediaPdfData,
 ) {
-  return renderToBuffer(<WorkOrderPdf workOrder={workOrder} company={company} />);
+  return renderToBuffer(
+    <WorkOrderPdf workOrder={workOrder} company={company} media={media} />,
+  );
 }

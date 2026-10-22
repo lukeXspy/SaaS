@@ -4,6 +4,8 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 
 import { PageHeader } from "@/components/page-header";
+import { PhotoGallery } from "@/components/photo-gallery";
+import { PhotoUploader } from "@/components/photo-uploader";
 import { StatusBadge } from "@/components/status-badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -19,6 +21,10 @@ import {
 import { WorkOrderStatusActions } from "@/components/work-order-status-actions";
 import { requireAdmin } from "@/server/auth/session";
 import { getWorkOrder } from "@/server/services/work-orders";
+import {
+  resolveAttachmentUrls,
+  resolveExecutionSignatureUrl,
+} from "@/server/storage/resolve";
 
 export const metadata: Metadata = {
   title: "Detalhe da OS",
@@ -34,6 +40,10 @@ export default async function WorkOrderDetailPage({ params }: PageProps<"/app/or
 
   if (!workOrder) notFound();
 
+  const [photoUrls, signatureUrl] = await Promise.all([
+    resolveAttachmentUrls(workOrder.attachments),
+    resolveExecutionSignatureUrl(workOrder.execution?.signatureUrl ?? null),
+  ]);
   const now = new Date();
   const terminal = workOrder.status === "DONE" || workOrder.status === "CANCELED";
   const overdue =
@@ -235,10 +245,10 @@ export default async function WorkOrderDetailPage({ params }: PageProps<"/app/or
                       <p className="text-xs text-muted-foreground">
                         {formatDateTime(workOrder.execution.signedAt)}
                       </p>
-                      {workOrder.execution.signatureUrl?.startsWith("data:image/") ? (
+                      {signatureUrl ? (
                         // eslint-disable-next-line @next/next/no-img-element
                         <img
-                          src={workOrder.execution.signatureUrl}
+                          src={signatureUrl}
                           alt={`Assinatura de ${workOrder.execution.signedByName}`}
                           className="mt-2 h-20 rounded border bg-white object-contain"
                         />
@@ -279,6 +289,20 @@ export default async function WorkOrderDetailPage({ params }: PageProps<"/app/or
           </Card>
         </div>
       </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Fotos</CardTitle>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-3">
+          {!terminal ? <PhotoUploader target={{ workOrderId: workOrder.id }} /> : null}
+          <PhotoGallery
+            photos={photoUrls}
+            canDelete={!terminal}
+            emptyText="Nenhuma foto anexada à OS."
+          />
+        </CardContent>
+      </Card>
 
       <Card>
         <CardHeader>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Home, LayoutDashboard } from "lucide-react";
+import { ClipboardCheck, Home, LayoutDashboard } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -11,6 +11,7 @@ export function FieldNav({ isAdmin }: { isAdmin: boolean }) {
 
   const items = [
     { href: "/campo", label: "Hoje", icon: Home, exact: true },
+    { href: "/campo/inspecoes", label: "Inspeções", icon: ClipboardCheck, exact: false },
     ...(isAdmin
       ? [{ href: "/app", label: "Gestão", icon: LayoutDashboard, exact: false }]
       : []),

@@ -91,6 +91,11 @@ export async function getWorkOrder(companyId: string, id: string, viewer: Viewer
       createdBy: { select: { id: true, name: true } },
       execution: true,
       items: { orderBy: { position: "asc" } },
+      attachments: {
+        where: { kind: "PHOTO" },
+        orderBy: { createdAt: "asc" },
+        select: { id: true, storagePath: true, fileName: true },
+      },
       statusHistory: {
         orderBy: { createdAt: "asc" },
         include: { changedBy: { select: { id: true, name: true } } },
