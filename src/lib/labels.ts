@@ -73,6 +73,12 @@ export const assetStatusLabels: Record<AssetStatus, string> = {
   DECOMMISSIONED: "Desativado",
 };
 
+export const assetStatusTone: Record<AssetStatus, Tone> = {
+  ACTIVE: "success",
+  INACTIVE: "warning",
+  DECOMMISSIONED: "neutral",
+};
+
 export const criticalityLabels: Record<Criticality, string> = {
   LOW: "Baixa",
   MEDIUM: "Média",

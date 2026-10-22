@@ -4,3 +4,5 @@ out
 coverage
 package-lock.json
 prisma/migrations
+.pgdata
+.pglite
