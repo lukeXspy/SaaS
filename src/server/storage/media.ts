@@ -1,75 +1,28 @@
 import "server-only";
 
-import { randomUUID } from "node:crypto";
-
 import { getStorageClient, isStorageConfigured, STORAGE_BUCKET } from "./client";
 import { serviceError, serviceOk, type ServiceResult } from "@/server/services/result";
 
+// Re-exporta funções puras (testáveis sem servidor)
+export {
+  detectRealMimeType,
+  buildStoragePath,
+  extractCompanyIdFromPath,
+  MAX_FILE_SIZE,
+  SIGNED_URL_EXPIRES,
+  ALLOWED_MIME,
+  type MediaTargetType,
+} from "@/lib/storage-utils";
+
+import {
+  ALLOWED_MIME,
+  buildStoragePath,
+  detectRealMimeType,
+  MAX_FILE_SIZE,
+  type MediaTargetType,
+} from "@/lib/storage-utils";
+
 export { isStorageConfigured };
-
-// ─────────────────────────────────────────────────────────────
-// Constantes
-// ─────────────────────────────────────────────────────────────
-
-/** Limite máximo de arquivo em bytes (5 MB). */
-export const MAX_FILE_SIZE = 5 * 1024 * 1024;
-
-/** Duração da URL assinada em segundos (1 hora). */
-export const SIGNED_URL_EXPIRES = 3600;
-
-/** MIME types permitidos e suas extensões. */
-const ALLOWED_MIME: Record<string, string> = {
-  "image/jpeg": ".jpg",
-  "image/png": ".png",
-  "image/webp": ".webp",
-};
-
-// ─────────────────────────────────────────────────────────────
-// Validação de magic bytes (conteúdo real, não MIME declarado)
-// ─────────────────────────────────────────────────────────────
-
-/**
- * Detecta o MIME real do arquivo lendo os primeiros bytes.
- * Retorna null se o formato não for reconhecido ou permitido.
- */
-export function detectRealMimeType(buffer: Buffer): string | null {
-  // JPEG: FF D8 FF
-  if (buffer.length >= 3 && buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[2] === 0xff) {
-    return "image/jpeg";
-  }
-
-  // PNG: 89 50 4E 47 0D 0A 1A 0A
-  if (
-    buffer.length >= 8 &&
-    buffer[0] === 0x89 &&
-    buffer[1] === 0x50 &&
-    buffer[2] === 0x4e &&
-    buffer[3] === 0x47 &&
-    buffer[4] === 0x0d &&
-    buffer[5] === 0x0a &&
-    buffer[6] === 0x1a &&
-    buffer[7] === 0x0a
-  ) {
-    return "image/png";
-  }
-
-  // WebP: RIFF .... WEBP
-  if (
-    buffer.length >= 12 &&
-    buffer[0] === 0x52 && // R
-    buffer[1] === 0x49 && // I
-    buffer[2] === 0x46 && // F
-    buffer[3] === 0x46 && // F
-    buffer[8] === 0x57 && // W
-    buffer[9] === 0x45 && // E
-    buffer[10] === 0x42 && // B
-    buffer[11] === 0x50 // P
-  ) {
-    return "image/webp";
-  }
-
-  return null;
-}
 
 /**
  * Valida o buffer: tamanho, magic bytes e MIME final.
@@ -96,56 +49,11 @@ function validateBuffer(buffer: Buffer): ServiceResult<string> {
   return serviceOk(realMime);
 }
 
-// ─────────────────────────────────────────────────────────────
-// Geração de paths (sempre no servidor, nunca do cliente)
-// ─────────────────────────────────────────────────────────────
-
-export type MediaTargetType = "work-orders" | "inspections" | "signatures" | "assets";
-
-/**
- * Gera um path determinístico e seguro para o Storage.
- * Sempre chamado no servidor — o cliente nunca fornece o path.
- *
- * Formato: {companyId}/{type}/{entityId}/{uuid}.{ext}
- */
-export function buildStoragePath(
-  companyId: string,
-  type: MediaTargetType,
-  entityId: string,
-  extension: string,
-): string {
-  const uuid = randomUUID();
-  const ext = extension.startsWith(".") ? extension : `.${extension}`;
-  return `${companyId}/${type}/${entityId}/${uuid}${ext}`;
-}
-
-/**
- * Extrai o companyId do path (primeiro segmento).
- * Usado como verificação adicional (defense in depth), mas o isolamento
- * principal é feito pelos services que validam sessão + permissão.
- */
-export function extractCompanyIdFromPath(path: string): string | null {
-  const idx = path.indexOf("/");
-  if (idx <= 0) return null;
-  return path.slice(0, idx);
-}
-
-// ─────────────────────────────────────────────────────────────
-// Operações de Storage
-// ─────────────────────────────────────────────────────────────
-
 /**
  * Faz upload de um buffer para o Storage.
  *
  * Valida conteúdo real (magic bytes), tamanho (≤ 5 MB) e gera path no servidor.
  * Em dev sem configuração, retorna o data URL como fallback.
- *
- * @param companyId  ID da empresa (isolamento por tenant)
- * @param type       Categoria do arquivo
- * @param entityId   ID da OS/inspeção a que o arquivo pertence
- * @param buffer     Bytes do arquivo
- * @param declaredMime  MIME declarado (validado contra magic bytes)
- * @param dataUrlFallback  Em dev, se Storage não configurado, usa este data URL
  */
 export async function uploadMedia(
   companyId: string,
@@ -162,7 +70,6 @@ export async function uploadMedia(
   // Desenvolvimento sem Supabase configurado: fallback data URL
   if (!isStorageConfigured()) {
     if (process.env.NODE_ENV === "production") {
-      // getStorageClient() já lança em produção, mas mantemos por clareza
       return serviceError("Storage não configurado. Contate o suporte.");
     }
     if (!dataUrlFallback) {
@@ -207,7 +114,7 @@ export async function uploadMedia(
  */
 export async function getSignedMediaUrl(
   storagePath: string,
-  expiresInSeconds: number = SIGNED_URL_EXPIRES,
+  expiresInSeconds: number = 3600,
 ): Promise<ServiceResult<string>> {
   // Data URLs (dev fallback) são usadas diretamente
   if (storagePath.startsWith("data:")) {
