@@ -5,7 +5,7 @@ import type { Tone } from "@/lib/labels";
 
 const toneClasses: Record<Tone, string> = {
   neutral: "bg-muted text-muted-foreground ring-border",
-  info: "bg-blue-50 text-blue-700 ring-blue-200 dark:bg-blue-950 dark:text-blue-300 dark:ring-blue-900",
+  info: "bg-sky-50 text-sky-700 ring-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:ring-sky-900",
   warning:
     "bg-amber-50 text-amber-800 ring-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:ring-amber-900",
   success:
@@ -14,12 +14,19 @@ const toneClasses: Record<Tone, string> = {
     "bg-red-50 text-red-700 ring-red-200 dark:bg-red-950 dark:text-red-300 dark:ring-red-900",
 };
 
+const activeTones: Partial<Record<Tone, string>> = {
+  info: "badge-pulse",
+  warning: "badge-pulse",
+};
+
 export function StatusBadge({
   tone = "neutral",
+  pulse = false,
   className,
   children,
 }: {
   tone?: Tone;
+  pulse?: boolean;
   className?: string;
   children: ReactNode;
 }) {
@@ -28,9 +35,16 @@ export function StatusBadge({
       className={cn(
         "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset",
         toneClasses[tone],
+        pulse && activeTones[tone],
         className,
       )}
     >
+      {pulse && (
+        <span
+          aria-hidden
+          className="inline-block size-1.5 rounded-full bg-current opacity-70"
+        />
+      )}
       {children}
     </span>
   );

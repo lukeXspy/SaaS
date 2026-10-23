@@ -29,10 +29,17 @@ export function SubmitButton({
       variant={variant}
       size={size}
       disabled={pending || disabled}
+      aria-busy={pending || undefined}
       className={className}
     >
-      {pending ? <Loader2 aria-hidden className="animate-spin" /> : null}
-      {pending ? pendingText : children}
+      {pending ? (
+        <span className="inline-flex items-center gap-2">
+          <Loader2 aria-hidden className="size-4 animate-spin" />
+          {pendingText}
+        </span>
+      ) : (
+        children
+      )}
     </Button>
   );
 }
