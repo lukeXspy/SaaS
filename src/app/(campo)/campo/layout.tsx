@@ -2,8 +2,6 @@ import { LogOut } from "lucide-react";
 import Link from "next/link";
 
 import { FieldNav } from "@/components/field-nav";
-import { Button } from "@/components/ui/button";
-import { logoutAction } from "@/server/actions/auth";
 import { requireUser } from "@/server/auth/session";
 
 export default async function FieldLayout({ children }: LayoutProps<"/campo">) {
@@ -18,11 +16,14 @@ export default async function FieldLayout({ children }: LayoutProps<"/campo">) {
           </Link>
           <div className="flex min-w-0 items-center gap-2">
             <span className="truncate text-xs text-muted-foreground">{user.companyName}</span>
-            <form action={logoutAction}>
-              <Button type="submit" variant="ghost" size="icon-sm" aria-label="Sair">
-                <LogOut aria-hidden />
-              </Button>
-            </form>
+            <Link
+              href="/api/logout"
+              aria-label="Sair"
+              title="Sair"
+              className="inline-flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            >
+              <LogOut aria-hidden className="size-4" />
+            </Link>
           </div>
         </div>
       </header>
