@@ -39,6 +39,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# supabase CLI (usamos Prisma migrations, não o CLI)
+/supabase/
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

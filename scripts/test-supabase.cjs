@@ -1,59 +1,55 @@
 /**
- * Testa a conexão com o Supabase e mostra a URL correta quando funcionar.
- * Uso: node scripts/test-supabase.cjs
- *
- * Aguarde 5-10 minutos após criar o projeto antes de rodar.
+ * Verifica a conexão com o Supabase (região us-west-2, pooler v2).
+ * Uso: npm run supabase:test
  */
 
 const { PrismaClient } = require("@prisma/client");
 
 const PROJECT = "yyjddvaxuupnfjtlowop";
-const PASSWORD = "MarconSaaS2026%2A%2A%40%40";
+const HOST = "aws-1-us-west-2.pooler.supabase.com";
 
-// Regiões onde a pooler do Supabase responde
-const poolers = [
-  { host: "aws-0-sa-east-1.pooler.supabase.com", port: 6543, label: "sa-east-1 (São Paulo)" },
-  { host: "aws-0-us-east-1.pooler.supabase.com", port: 6543, label: "us-east-1 (Virginia)" },
-  { host: "aws-0-us-west-1.pooler.supabase.com", port: 6543, label: "us-west-1 (Oregon)" },
-];
+// Lê a senha do .env (ou usa o padrão)
+const DATABASE_URL =
+  process.env.DATABASE_URL ??
+  `postgresql://postgres.${PROJECT}:${process.env.SUPABASE_DB_PASSWORD ?? ""}@${HOST}:6543/postgres?pgbouncer=true&schema=public`;
 
-async function testPooler(host, port) {
-  const url = `postgresql://postgres.${PROJECT}:${PASSWORD}@${host}:${port}/postgres?pgbouncer=true&schema=public`;
-  const prisma = new PrismaClient({ datasources: { db: { url } } });
+async function main() {
+  console.log("🔍 Testando conexão com o Supabase...\n");
+  console.log(`  Host: ${HOST}`);
+  console.log(`  Database URL: ${DATABASE_URL.replace(/:[^:@]+@/, ":***@")}\n`);
+
+  const prisma = new PrismaClient({
+    datasources: { db: { url: DATABASE_URL } },
+  });
+
   try {
-    const r = await prisma.$queryRaw`SELECT current_database() as db`;
-    await prisma.$disconnect();
-    return { ok: true, url };
+    const info = await prisma.$queryRaw`
+      SELECT
+        current_database() as db,
+        current_user as usr,
+        version() as ver,
+        (SELECT count(*) FROM information_schema.tables WHERE table_schema = 'public') as tables
+    `;
+
+    console.log("✅ CONECTADO!");
+    console.log(`  Database: ${info[0].db}`);
+    console.log(`  User: ${info[0].usr}`);
+    console.log(`  Version: ${info[0].ver.split(",")[0]}`);
+    console.log(`  Tables: ${info[0].tables}`);
+
+    // Verifica dados do seed
+    const companies = await prisma.company.count();
+    const users = await prisma.user.count();
+    console.log(`  Companies: ${companies}`);
+    console.log(`  Users: ${users}`);
+
+    console.log("\n✅ Supabase pronto para uso!");
   } catch (err) {
-    await prisma.$disconnect().catch(() => {});
-    return { ok: false, error: err.message.split("\n")[1] ?? err.message.slice(0, 100) };
+    console.error("❌ Erro:", err.message.split("\n")[0]);
+    process.exit(1);
+  } finally {
+    await prisma.$disconnect();
   }
 }
 
-(async () => {
-  console.log("🔍 Testando conexão com o Supabase...\n");
-
-  for (const p of poolers) {
-    process.stdout.write(`  ${p.label}... `);
-    const result = await testPooler(p.host, p.port);
-    if (result.ok) {
-      console.log("✅ CONECTADO!\n");
-      console.log("═══════════════════════════════════════════════════");
-      console.log("✅ SUPABASE PRONTO! Use estas URLs no .env:");
-      console.log("═══════════════════════════════════════════════════\n");
-      console.log(`DATABASE_URL="${result.url}"`);
-      console.log(`DIRECT_URL="postgresql://postgres.${PROJECT}:${PASSWORD}@${p.host}:5432/postgres"`);
-      process.exit(0);
-    }
-    console.log(`❌ ${result.error}`);
-  }
-
-  console.log("\n⏳ Projeto ainda não registrado na pooler.");
-  console.log("   Isto é normal para projetos recém-criados.");
-  console.log("   Aguarde 5-10 minutos e rode este script novamente.");
-  console.log("   Se persistir após 15 min, verifique:");
-  console.log("   1. Dashboard → Database → Connect (botão verde)");
-  console.log("   2. Settings → Database → Connection pooling");
-  console.log("   3. Settings → Database → Reset database password");
-  process.exit(1);
-})();
+main();
