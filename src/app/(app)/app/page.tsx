@@ -1,17 +1,14 @@
 import {
   AlertTriangle,
   ArrowRight,
-  Building2,
   CheckCircle2,
   ChevronRight,
   ClipboardList,
   Clock,
-  MapPin,
   PlayCircle,
   Plus,
   Timer,
   UserCheck,
-  Wrench,
   XCircle,
 } from "lucide-react";
 import type { Metadata } from "next";
@@ -19,9 +16,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { StatusBadge } from "@/components/status-badge";
-import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { firstName, formatDate, formatDateTime } from "@/lib/format";
+import { firstName, formatDate } from "@/lib/format";
 import {
   priorityTone,
   workOrderPriorityLabels,
@@ -43,38 +39,10 @@ export default async function DashboardPage() {
   const now = new Date();
 
   const stats = [
-    {
-      icon: Building2,
-      label: "Clientes",
-      value: s.activeClients,
-      href: "/app/clientes",
-      color: "text-sky-400 bg-sky-500/10 ring-sky-500/20",
-      glow: "shadow-[0_0_24px_rgba(56,189,248,0.06)]",
-    },
-    {
-      icon: MapPin,
-      label: "Locais",
-      value: s.activeSites,
-      href: "/app/clientes",
-      color: "text-violet-400 bg-violet-500/10 ring-violet-500/20",
-      glow: "shadow-[0_0_24px_rgba(139,92,246,0.06)]",
-    },
-    {
-      icon: Wrench,
-      label: "Ativos",
-      value: s.activeAssets,
-      href: "/app/ativos",
-      color: "text-amber-400 bg-amber-500/10 ring-amber-500/20",
-      glow: "shadow-[0_0_24px_rgba(245,158,11,0.06)]",
-    },
-    {
-      icon: ClipboardList,
-      label: "OS abertas",
-      value: s.openWorkOrders,
-      href: "/app/ordens",
-      color: "text-emerald-400 bg-emerald-500/10 ring-emerald-500/20",
-      glow: "shadow-[0_0_24px_rgba(16,185,129,0.06)]",
-    },
+    { label: "Clientes", value: s.activeClients, href: "/app/clientes" },
+    { label: "Locais", value: s.activeSites, href: "/app/clientes" },
+    { label: "Ativos", value: s.activeAssets, href: "/app/ativos" },
+    { label: "OS abertas", value: s.openWorkOrders, href: "/app/ordens" },
   ];
 
   const statusItems = [
@@ -87,86 +55,71 @@ export default async function DashboardPage() {
 
   const totalOs = statusItems.reduce((sum, item) => sum + item.value, 0);
 
-  const shortcuts = [
-    { href: "/app/ordens/nova", icon: Plus, label: "Nova OS", primary: true },
-    { href: "/app/clientes/novo", icon: Plus, label: "Novo cliente" },
-    { href: "/app/ativos/novo", icon: Plus, label: "Novo ativo" },
-    { href: "/app/tecnicos", icon: UserCheck, label: "Equipe" },
-  ];
-
   return (
-    <div className="flex flex-col gap-5">
-      {/* ═══ Header ═══ */}
-      <div className="cinematic-in">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Olá, {firstName(user.name)}
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          {user.companyName} · {formatDateTime(now)}
-        </p>
+    <div className="flex flex-col gap-6">
+      {/* ═══ Header — título + CTA ═══ */}
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Olá, {firstName(user.name)}
+          </h1>
+          <p className="mt-0.5 text-sm text-muted-foreground">{user.companyName}</p>
+        </div>
+        <Link
+          href="/app/ordens/nova"
+          className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+        >
+          <Plus aria-hidden className="size-4" />
+          Nova OS
+        </Link>
       </div>
 
-      {/* ═══ Alert: OS atrasadas ═══ */}
+      {/* ═══ Alert — banner fino, não Card ═══ */}
       {s.overdueWorkOrders > 0 && (
-        <div className="cinematic-in-1">
-          <Card className="spring-pop border-amber-500/30 bg-amber-500/5">
-            <CardContent className="flex items-start gap-3 text-sm text-amber-200">
-              <AlertTriangle aria-hidden className="mt-0.5 size-4 shrink-0 text-amber-400" />
-              <p>
-                <strong className="text-amber-300">{s.overdueWorkOrders}</strong>{" "}
-                {s.overdueWorkOrders === 1
-                  ? "ordem de serviço está atrasada."
-                  : "ordens de serviço estão atrasadas."}{" "}
-                <Link
-                  href="/app/ordens"
-                  className="font-medium text-amber-300 underline underline-offset-4 hover:text-amber-200"
-                >
-                  Ver ordens →
-                </Link>
-              </p>
-            </CardContent>
-          </Card>
+        <div className="flex h-10 items-center gap-3 rounded-lg border-l-2 border-amber-500/50 bg-amber-500/8 px-4 text-sm text-amber-200">
+          <AlertTriangle aria-hidden className="size-4 shrink-0 text-amber-400" />
+          <p>
+            <strong className="font-semibold text-amber-300">
+              {s.overdueWorkOrders}
+            </strong>{" "}
+            {s.overdueWorkOrders === 1
+              ? "OS está atrasada."
+              : "OS estão atrasadas."}{" "}
+            <Link
+              href="/app/ordens"
+              className="font-medium text-amber-300 underline underline-offset-4 hover:text-amber-200"
+            >
+              Ver ordens
+            </Link>
+          </p>
         </div>
       )}
 
-      {/* ═══ Stats ═══ */}
-      <div className="cinematic-in-2 grid grid-cols-2 gap-3 lg:grid-cols-4">
+      {/* ═══ Stats — limpos, sem ícone, sem glow ═══ */}
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {stats.map((stat) => (
           <Link
             key={stat.label}
             href={stat.href}
-            className="card-hover group rounded-xl outline-none focus-visible:ring-3 focus-visible:ring-ring/50"
+            className="rounded-lg border border-border/60 bg-card px-4 py-3 outline-none hover:bg-card/80 focus-visible:ring-2 focus-visible:ring-ring/50"
           >
-            <Card className={`h-full gap-0 border-border/60 p-4 ${stat.glow}`}>
-              <div className="flex items-start justify-between">
-                <div
-                  className={`inline-flex size-9 items-center justify-center rounded-lg ring-1 ring-inset ${stat.color}`}
-                >
-                  <stat.icon aria-hidden className="size-4" />
-                </div>
-                <ChevronRight
-                  aria-hidden
-                  className="size-4 text-muted-foreground/40 transition-all group-hover:translate-x-0.5 group-hover:text-muted-foreground"
-                />
-              </div>
-              <p className="mt-3 text-3xl font-semibold tabular-nums tracking-tight">
-                {stat.value}
-              </p>
-              <p className="mt-0.5 text-xs text-muted-foreground">{stat.label}</p>
-            </Card>
+            <p className="text-2xl font-semibold tabular-nums tracking-tight">
+              {stat.value}
+            </p>
+            <p className="mt-0.5 text-xs text-muted-foreground">{stat.label}</p>
           </Link>
         ))}
       </div>
 
-      {/* ═══ Two-column: OS recentes + breakdown ═══ */}
-      <div className="grid gap-4 lg:grid-cols-[1fr_320px]">
-        {/* ── Coluna esquerda: OS recentes ── */}
-        <div className="cinematic-in-3 flex flex-col gap-3">
+      {/* ═══ Two-column — OS recentes + breakdown ═══ */}
+      <div className="grid gap-4 lg:grid-cols-[1fr_280px]">
+        {/* ── Coluna esquerda: OS recentes (dense rows) ── */}
+        <div className="min-w-0 flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <h2 className="text-base font-semibold">Ordens recentes</h2>
+            <h2 className="text-base font-medium">Ordens recentes</h2>
             <Link
               href="/app/ordens"
-              className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+              className="inline-flex items-center gap-1 text-[13px] text-muted-foreground hover:text-foreground"
             >
               Ver todas
               <ArrowRight aria-hidden className="size-3.5" />
@@ -174,27 +127,25 @@ export default async function DashboardPage() {
           </div>
 
           {s.recentWorkOrders.length === 0 ? (
-            <Card className="border-border/60">
-              <CardContent className="flex flex-col items-center gap-3 py-10 text-center">
-                <ClipboardList aria-hidden className="size-8 text-muted-foreground/50" />
-                <div>
-                  <p className="text-sm font-medium">Nenhuma OS criada ainda</p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    Crie a primeira ordem de serviço da sua equipe.
-                  </p>
-                </div>
-                <Link
-                  href="/app/ordens/nova"
-                  className={buttonVariants({ size: "sm" })}
-                >
-                  <Plus aria-hidden className="size-4" />
-                  Nova OS
-                </Link>
-              </CardContent>
-            </Card>
+            <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed py-10 text-center">
+              <ClipboardList aria-hidden className="size-6 text-muted-foreground/50" />
+              <div>
+                <p className="text-sm font-medium">Nenhuma OS criada</p>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Crie a primeira ordem de serviço da sua equipe.
+                </p>
+              </div>
+              <Link
+                href="/app/ordens/nova"
+                className="inline-flex items-center gap-1.5 rounded-lg bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90"
+              >
+                <Plus aria-hidden className="size-3.5" />
+                Criar OS
+              </Link>
+            </div>
           ) : (
-            <Card className="border-border/60 p-0">
-              <ul className="divide-y divide-border/40">
+            <div className="rounded-lg border border-border/60 bg-card">
+              <ul>
                 {s.recentWorkOrders.map((wo) => {
                   const overdue =
                     wo.dueAt !== null &&
@@ -203,14 +154,14 @@ export default async function DashboardPage() {
                     wo.status !== "CANCELED";
 
                   return (
-                    <li key={wo.id}>
+                    <li key={wo.id} className="border-b border-border/40 last:border-0">
                       <Link
                         href={`/app/ordens/${wo.id}`}
-                        className="group flex items-center gap-4 px-4 py-3 transition-colors hover:bg-muted/40"
+                        className="group flex items-center gap-3 px-4 py-2.5 hover:bg-muted/30"
                       >
                         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
                           <div className="flex items-center gap-2">
-                            <span className="text-xs font-medium text-muted-foreground">
+                            <span className="text-xs font-medium tabular-nums text-muted-foreground">
                               OS #{wo.number}
                             </span>
                             <StatusBadge tone={workOrderStatusTone[wo.status]}>
@@ -220,8 +171,10 @@ export default async function DashboardPage() {
                               {workOrderPriorityLabels[wo.priority]}
                             </StatusBadge>
                           </div>
-                          <p className="truncate text-sm font-medium">{wo.title}</p>
-                          <p className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <p className="truncate text-[13px] font-medium">
+                            {wo.title}
+                          </p>
+                          <p className="flex items-center gap-2 truncate text-xs text-muted-foreground">
                             <span className="truncate">{wo.client.name}</span>
                             {wo.assignedTo && (
                               <>
@@ -233,7 +186,7 @@ export default async function DashboardPage() {
                               <>
                                 <span aria-hidden>·</span>
                                 <span
-                                  className={`inline-flex items-center gap-1 shrink-0 ${
+                                  className={`inline-flex shrink-0 items-center gap-1 ${
                                     overdue ? "font-medium text-red-400" : ""
                                   }`}
                                 >
@@ -246,45 +199,42 @@ export default async function DashboardPage() {
                         </div>
                         <ChevronRight
                           aria-hidden
-                          className="size-4 shrink-0 text-muted-foreground/40 transition-all group-hover:translate-x-0.5 group-hover:text-muted-foreground"
+                          className="size-4 shrink-0 text-muted-foreground/30 group-hover:text-muted-foreground"
                         />
                       </Link>
                     </li>
                   );
                 })}
               </ul>
-            </Card>
+            </div>
           )}
         </div>
 
-        {/* ── Coluna direita: breakdown + equipe ═══ */}
-        <div className="cinematic-in-4 flex flex-col gap-4">
+        {/* ── Coluna direita: breakdown + equipe ── */}
+        <div className="flex flex-col gap-4">
           {/* OS por status */}
           <Card className="border-border/60">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+              <CardTitle className="text-xs font-medium text-muted-foreground">
                 OS por status
               </CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col gap-3">
+            <CardContent className="flex flex-col gap-2.5">
               {statusItems.map((item) => {
                 const pct = totalOs > 0 ? (item.value / totalOs) * 100 : 0;
                 return (
-                  <div key={item.label} className="flex items-center gap-3">
-                    <div className="flex min-w-0 flex-1 flex-col gap-1">
-                      <div className="flex items-center justify-between text-xs">
-                        <span className="text-muted-foreground">{item.label}</span>
-                        <span className="font-medium tabular-nums text-foreground">
-                          {item.value}
-                        </span>
-                      </div>
-                      {/* Progress bar */}
-                      <div className="h-1.5 overflow-hidden rounded-full bg-muted">
-                        <div
-                          className={`h-full rounded-full ${item.color} transition-all duration-700`}
-                          style={{ width: `${Math.max(pct, item.value > 0 ? 4 : 0)}%` }}
-                        />
-                      </div>
+                  <div key={item.label} className="flex flex-col gap-1">
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-muted-foreground">{item.label}</span>
+                      <span className="font-medium tabular-nums">
+                        {item.value}
+                      </span>
+                    </div>
+                    <div className="h-1 overflow-hidden rounded-full bg-muted">
+                      <div
+                        className={`h-full rounded-full ${item.color}`}
+                        style={{ width: `${Math.max(pct, item.value > 0 ? 3 : 0)}%` }}
+                      />
                     </div>
                   </div>
                 );
@@ -295,48 +245,32 @@ export default async function DashboardPage() {
           {/* Equipe */}
           <Card className="border-border/60">
             <CardHeader className="pb-3">
-              <CardTitle className="text-sm font-medium text-muted-foreground">
+              <CardTitle className="text-xs font-medium text-muted-foreground">
                 Equipe
               </CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col gap-2.5">
-              <div className="flex items-center justify-between text-sm">
+            <CardContent className="flex flex-col gap-2">
+              <div className="flex items-center justify-between text-[13px]">
                 <span className="text-muted-foreground">Técnicos ativos</span>
-                <span className="font-semibold tabular-nums">{s.activeTechnicians}</span>
+                <span className="font-semibold tabular-nums">
+                  {s.activeTechnicians}
+                </span>
               </div>
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-muted-foreground">OS concluídas este mês</span>
+              <div className="flex items-center justify-between text-[13px]">
+                <span className="text-muted-foreground">Concluídas este mês</span>
                 <span className="font-semibold tabular-nums text-emerald-400">
                   {s.completedThisMonth}
                 </span>
               </div>
               <Link
                 href="/app/tecnicos"
-                className="tactile mt-2 inline-flex items-center justify-center gap-2 rounded-lg border border-border/60 bg-muted/40 px-3 py-2 text-xs font-medium text-muted-foreground hover:bg-muted hover:text-foreground"
+                className="mt-1 inline-flex items-center justify-center gap-1.5 rounded-md border border-border/60 px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted/40 hover:text-foreground"
               >
                 <UserCheck aria-hidden className="size-3.5" />
                 Gerenciar equipe
               </Link>
             </CardContent>
           </Card>
-
-          {/* Atalhos rápidos */}
-          <div className="flex flex-col gap-2">
-            {shortcuts.map((sc) => (
-              <Link
-                key={sc.href}
-                href={sc.href}
-                className={`tactile flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors ${
-                  sc.primary
-                    ? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary/90"
-                    : "border border-border/60 bg-muted/40 hover:bg-muted"
-                }`}
-              >
-                <sc.icon aria-hidden className="size-4" />
-                {sc.label}
-              </Link>
-            ))}
-          </div>
         </div>
       </div>
     </div>
