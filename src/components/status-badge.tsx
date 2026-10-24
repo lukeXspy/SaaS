@@ -3,20 +3,21 @@ import { cn } from "cn";
 
 import type { Tone } from "@/lib/labels";
 
+/*
+ * Badges cinematográficos — cores com glow sutil em dark.
+ * `pulse` adiciona dot indicador animado para status ativos.
+ */
 const toneClasses: Record<Tone, string> = {
-  neutral: "bg-muted text-muted-foreground ring-border",
-  info: "bg-sky-50 text-sky-700 ring-sky-200 dark:bg-sky-950 dark:text-sky-300 dark:ring-sky-900",
+  neutral:
+    "bg-muted text-muted-foreground ring-border",
+  info:
+    "bg-sky-500/10 text-sky-400 ring-sky-500/20 shadow-[0_0_12px_rgba(56,189,248,0.08)]",
   warning:
-    "bg-amber-50 text-amber-800 ring-amber-200 dark:bg-amber-950 dark:text-amber-300 dark:ring-amber-900",
+    "bg-amber-500/10 text-amber-400 ring-amber-500/20 shadow-[0_0_12px_rgba(245,158,11,0.08)]",
   success:
-    "bg-emerald-50 text-emerald-700 ring-emerald-200 dark:bg-emerald-950 dark:text-emerald-300 dark:ring-emerald-900",
+    "bg-emerald-500/10 text-emerald-400 ring-emerald-500/20 shadow-[0_0_12px_rgba(16,185,129,0.08)]",
   danger:
-    "bg-red-50 text-red-700 ring-red-200 dark:bg-red-950 dark:text-red-300 dark:ring-red-900",
-};
-
-const activeTones: Partial<Record<Tone, string>> = {
-  info: "badge-pulse",
-  warning: "badge-pulse",
+    "bg-red-500/10 text-red-400 ring-red-500/20 shadow-[0_0_12px_rgba(239,68,68,0.08)]",
 };
 
 export function StatusBadge({
@@ -33,16 +34,15 @@ export function StatusBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset",
+        "spring-pop inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ring-inset",
         toneClasses[tone],
-        pulse && activeTones[tone],
         className,
       )}
     >
       {pulse && (
         <span
           aria-hidden
-          className="inline-block size-1.5 rounded-full bg-current opacity-70"
+          className="badge-pulse inline-block size-1.5 shrink-0 rounded-full bg-current"
         />
       )}
       {children}

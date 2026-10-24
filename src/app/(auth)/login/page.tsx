@@ -14,32 +14,38 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
   const callbackUrl = safeCallbackUrl(params.callbackUrl);
 
   return (
-    <div className="relative flex min-h-dvh flex-col">
-      {/* Background: dots com fade */}
+    <div className="relative flex min-h-dvh flex-col bg-slate-950">
+      {/* Cinematic background */}
       <div
         aria-hidden
-        className="bg-dots pointer-events-none absolute inset-0 [mask-image:radial-gradient(ellipse_80%_70%_at_50%_40%,black,transparent)]"
+        className="bg-dots pointer-events-none absolute inset-0 opacity-60 [mask-image:radial-gradient(ellipse_80%_60%_at_50%_30%,black,transparent)]"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_50%_0%,rgba(245,158,11,0.06),transparent)]"
       />
 
       <main className="relative mx-auto flex w-full max-w-sm flex-1 flex-col justify-center px-5 py-12">
         <Link
           href="/"
-          className="animate-fade-up mb-8 inline-flex items-center gap-2 text-lg font-semibold tracking-tight"
+          className="cinematic-in mb-10 inline-flex items-center gap-3 text-xl font-semibold tracking-tight text-slate-100"
         >
           <span
             aria-hidden
-            className="inline-flex size-8 items-center justify-center rounded-lg bg-primary text-sm font-bold text-primary-foreground"
+            className="flex size-10 items-center justify-center rounded-xl bg-amber-500 text-base font-bold text-slate-950 shadow-lg shadow-amber-500/20"
           >
             M
           </span>
           Manutenza
         </Link>
 
-        <div className="animate-fade-up-1">
-          <Card className="border-border/60 shadow-lg shadow-black/[0.03]">
+        <div className="cinematic-in-1">
+          <Card className="border-white/10 bg-slate-900/70 shadow-2xl shadow-black/40 backdrop-blur-xl">
             <CardHeader className="pb-4">
-              <CardTitle className="text-2xl tracking-tight">Acessar o sistema</CardTitle>
-              <CardDescription className="leading-relaxed">
+              <CardTitle className="text-2xl tracking-tight text-slate-100">
+                Acessar o sistema
+              </CardTitle>
+              <CardDescription className="leading-relaxed text-slate-400">
                 Use o e-mail e a senha cadastrados pela sua empresa.
               </CardDescription>
             </CardHeader>
@@ -49,11 +55,11 @@ export default async function LoginPage({ searchParams }: PageProps<"/login">) {
           </Card>
         </div>
 
-        <p className="animate-fade-up-2 mt-6 text-center text-sm text-muted-foreground">
+        <p className="cinematic-in-2 mt-8 text-center text-sm text-slate-500">
           Esqueceu a senha?{" "}
           <Link
             href="/esqueci-senha"
-            className="font-medium text-foreground underline-offset-4 hover:underline"
+            className="font-medium text-slate-300 underline-offset-4 hover:text-white hover:underline"
           >
             Redefinir acesso
           </Link>

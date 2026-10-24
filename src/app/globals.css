@@ -49,76 +49,95 @@
 }
 
 /*
- * Paleta: slate quente com âmbar (trabalho/energia) e esmeralda (concluído).
- * Evita o clichê roxo de IA — mantém identidade neutra profissional.
+ * ═══════════════════════════════════════════════════════════════
+ * CINEMATIC DARK — design system inspirado no T3 Code template
+ *
+ * Princípios:
+ * 1. Dark-first: slate-950 como base, "cinematic" profundidade
+ * 2. Amber accent: trabalho/energia, não roxo AI genérico
+ * 3. Tátil: botões que "afundam" ao toque (active scale)
+ * 4. Spring: easing com overshoot para micro-interações
+ * 5. Progressive blur: elementos que emergem do fundo
+ * 6. Glow sutil: não neon, mas presença
+ * ═══════════════════════════════════════════════════════════════
  */
 :root {
-  --background: oklch(0.985 0.002 260);
-  --foreground: oklch(0.18 0.01 260);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.18 0.01 260);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.18 0.01 260);
-  --primary: oklch(0.25 0.02 260);
-  --primary-foreground: oklch(0.985 0.002 260);
-  --secondary: oklch(0.96 0.003 260);
-  --secondary-foreground: oklch(0.25 0.02 260);
-  --muted: oklch(0.96 0.003 260);
-  --muted-foreground: oklch(0.52 0.01 260);
-  --accent: oklch(0.95 0.01 260);
-  --accent-foreground: oklch(0.25 0.02 260);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.91 0.005 260);
-  --input: oklch(0.91 0.005 260);
-  --ring: oklch(0.65 0.08 50);
-  --chart-1: oklch(0.75 0.15 85);
-  --chart-2: oklch(0.68 0.15 160);
-  --chart-3: oklch(0.55 0.12 260);
-  --chart-4: oklch(0.45 0.10 260);
-  --chart-5: oklch(0.35 0.08 260);
-  --radius: 0.625rem;
-  --sidebar: oklch(0.985 0.002 260);
-  --sidebar-foreground: oklch(0.18 0.01 260);
-  --sidebar-primary: oklch(0.25 0.02 260);
-  --sidebar-primary-foreground: oklch(0.985 0.002 260);
-  --sidebar-accent: oklch(0.96 0.003 260);
-  --sidebar-accent-foreground: oklch(0.25 0.02 260);
-  --sidebar-border: oklch(0.91 0.005 260);
-  --sidebar-ring: oklch(0.65 0.08 50);
+  /* Base — cinematic dark */
+  --background: oklch(0.13 0.008 265);
+  --foreground: oklch(0.93 0.005 265);
+  /* Surfaces — cards flutuam sobre o fundo */
+  --card: oklch(0.17 0.01 265);
+  --card-foreground: oklch(0.93 0.005 265);
+  --popover: oklch(0.15 0.01 265);
+  --popover-foreground: oklch(0.93 0.005 265);
+  /* Primary — âmbar quente (ação/energia) */
+  --primary: oklch(0.75 0.16 75);
+  --primary-foreground: oklch(0.13 0.008 265);
+  /* Secondary — surface sutil */
+  --secondary: oklch(0.22 0.01 265);
+  --secondary-foreground: oklch(0.93 0.005 265);
+  /* Muted — texto secundário */
+  --muted: oklch(0.20 0.01 265);
+  --muted-foreground: oklch(0.60 0.01 265);
+  /* Accent — hover em superfícies */
+  --accent: oklch(0.22 0.01 265);
+  --accent-foreground: oklch(0.93 0.005 265);
+  /* Semantic */
+  --destructive: oklch(0.65 0.22 25);
+  --border: oklch(0.24 0.01 265);
+  --input: oklch(0.24 0.01 265);
+  --ring: oklch(0.75 0.16 75);
+  /* Charts — amber + emerald + sky */
+  --chart-1: oklch(0.75 0.16 75);
+  --chart-2: oklch(0.70 0.15 160);
+  --chart-3: oklch(0.70 0.12 240);
+  --chart-4: oklch(0.50 0.10 265);
+  --chart-5: oklch(0.40 0.08 265);
+  /* Radius — rounded-xl base para look moderno */
+  --radius: 0.75rem;
+  /* Sidebar */
+  --sidebar: oklch(0.15 0.01 265);
+  --sidebar-foreground: oklch(0.93 0.005 265);
+  --sidebar-primary: oklch(0.75 0.16 75);
+  --sidebar-primary-foreground: oklch(0.13 0.008 265);
+  --sidebar-accent: oklch(0.20 0.01 265);
+  --sidebar-accent-foreground: oklch(0.93 0.005 265);
+  --sidebar-border: oklch(0.24 0.01 265);
+  --sidebar-ring: oklch(0.75 0.16 75);
 }
 
 .dark {
-  --background: oklch(0.16 0.01 260);
-  --foreground: oklch(0.96 0.002 260);
-  --card: oklch(0.20 0.01 260);
-  --card-foreground: oklch(0.96 0.002 260);
-  --popover: oklch(0.20 0.01 260);
-  --popover-foreground: oklch(0.96 0.002 260);
-  --primary: oklch(0.92 0.005 260);
-  --primary-foreground: oklch(0.16 0.01 260);
-  --secondary: oklch(0.26 0.01 260);
-  --secondary-foreground: oklch(0.96 0.002 260);
-  --muted: oklch(0.26 0.01 260);
-  --muted-foreground: oklch(0.68 0.01 260);
-  --accent: oklch(0.26 0.01 260);
-  --accent-foreground: oklch(0.96 0.002 260);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.28 0.01 260);
-  --input: oklch(0.28 0.01 260);
-  --ring: oklch(0.65 0.08 50);
-  --chart-1: oklch(0.75 0.15 85);
-  --chart-2: oklch(0.68 0.15 160);
-  --chart-3: oklch(0.55 0.12 260);
-  --chart-4: oklch(0.45 0.10 260);
-  --chart-5: oklch(0.35 0.08 260);
-  --sidebar: oklch(0.16 0.01 260);
-  --sidebar-foreground: oklch(0.96 0.002 260);
-  --sidebar-primary: oklch(0.92 0.005 260);
-  --sidebar-primary-foreground: oklch(0.16 0.01 260);
-  --sidebar-accent: oklch(0.26 0.01 260);
-  --sidebar-accent-foreground: oklch(0.96 0.002 260);
-  --sidebar-border: oklch(0.28 0.01 260);
-  --sidebar-ring: oklch(0.65 0.08 50);
+  --background: oklch(0.13 0.008 265);
+  --foreground: oklch(0.93 0.005 265);
+  --card: oklch(0.17 0.01 265);
+  --card-foreground: oklch(0.93 0.005 265);
+  --popover: oklch(0.15 0.01 265);
+  --popover-foreground: oklch(0.93 0.005 265);
+  --primary: oklch(0.75 0.16 75);
+  --primary-foreground: oklch(0.13 0.008 265);
+  --secondary: oklch(0.22 0.01 265);
+  --secondary-foreground: oklch(0.93 0.005 265);
+  --muted: oklch(0.20 0.01 265);
+  --muted-foreground: oklch(0.60 0.01 265);
+  --accent: oklch(0.22 0.01 265);
+  --accent-foreground: oklch(0.93 0.005 265);
+  --destructive: oklch(0.65 0.22 25);
+  --border: oklch(0.24 0.01 265);
+  --input: oklch(0.24 0.01 265);
+  --ring: oklch(0.75 0.16 75);
+  --chart-1: oklch(0.75 0.16 75);
+  --chart-2: oklch(0.70 0.15 160);
+  --chart-3: oklch(0.70 0.12 240);
+  --chart-4: oklch(0.50 0.10 265);
+  --chart-5: oklch(0.40 0.08 265);
+  --sidebar: oklch(0.15 0.01 265);
+  --sidebar-foreground: oklch(0.93 0.005 265);
+  --sidebar-primary: oklch(0.75 0.16 75);
+  --sidebar-primary-foreground: oklch(0.13 0.008 265);
+  --sidebar-accent: oklch(0.20 0.01 265);
+  --sidebar-accent-foreground: oklch(0.93 0.005 265);
+  --sidebar-border: oklch(0.24 0.01 265);
+  --sidebar-ring: oklch(0.75 0.16 75);
 }
 
 @layer base {
@@ -131,91 +150,104 @@
   }
 }
 
-/* ══════════════════════════════════════════════════════════
-   ANIMAÇÕES (inspiradas em uiverse.io — sutis, funcionais)
-   ══════════════════════════════════════════════════════════ */
+/* ════════════════════════════════════════════════════════════
+   CINEMATIC MOTION — spring easing com overshoot (t3code style)
+   ════════════════════════════════════════════════════════════ */
 
-/* Fade-in com translateY para entrada de elementos */
-@keyframes fade-up {
+/* Spring: cubic-bezier com overshoot sutil */
+:root {
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Entrada cinematográfica — fade + rise + scale */
+@keyframes cinematic-in {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(24px) scale(0.96);
+    filter: blur(6px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
+    filter: blur(0);
   }
 }
 
-/* Shimmer para skeleton loading */
-@keyframes shimmer {
+/* Spring pop — para badges e alertas */
+@keyframes spring-pop {
   0% {
-    background-position: -200% 0;
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  60% {
+    transform: scale(1.05);
   }
   100% {
-    background-position: 200% 0;
-  }
-}
-
-/* Pulse suave para badges ativos */
-@keyframes pulse-soft {
-  0%, 100% {
     opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
+    transform: scale(1);
   }
 }
 
-/* Gradiente animado para CTA buttons */
-@keyframes gradient-x {
-  0%, 100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
+/* Shimmer skeleton */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 }
 
-/* Float sutil para elementos hero */
+/* Pulse suave para status ativos */
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+/* Float — elementos hero */
 @keyframes float {
-  0%, 100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-6px);
-  }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }
 
-/* Glow no focus de inputs */
+/* Marquee — testimonial scroll */
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* Glow pulse — input focus */
 @keyframes glow-pulse {
   0%, 100% {
-    box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 15%, transparent);
+    box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 12%, transparent);
   }
   50% {
-    box-shadow: 0 0 0 5px color-mix(in oklch, var(--ring) 20%, transparent);
+    box-shadow: 0 0 0 5px color-mix(in oklch, var(--ring) 18%, transparent);
   }
 }
 
-/* ══════════════════════════════════════════════════════════
+/* ════════════════════════════════════════════════════════════
    UTILITÁRIOS
-   ══════════════════════════════════════════════════════════ */
+   ════════════════════════════════════════════════════════════ */
 
-/* Entrada animada — use com animation-delay para stagger */
-.animate-fade-up {
-  animation: fade-up 0.5s ease-out both;
-}
-.animate-fade-up-1 { animation: fade-up 0.5s ease-out 0.1s both; }
-.animate-fade-up-2 { animation: fade-up 0.5s ease-out 0.2s both; }
-.animate-fade-up-3 { animation: fade-up 0.5s ease-out 0.3s both; }
-.animate-fade-up-4 { animation: fade-up 0.5s ease-out 0.4s both; }
+/* Entrada cinematográfica com stagger */
+.cinematic-in { animation: cinematic-in 0.6s var(--ease-spring) both; }
+.cinematic-in-1 { animation: cinematic-in 0.6s var(--ease-spring) 0.08s both; }
+.cinematic-in-2 { animation: cinematic-in 0.6s var(--ease-spring) 0.16s both; }
+.cinematic-in-3 { animation: cinematic-in 0.6s var(--ease-spring) 0.24s both; }
+.cinematic-in-4 { animation: cinematic-in 0.6s var(--ease-spring) 0.32s both; }
 
-/* Float para hero elements */
-.animate-float {
-  animation: float 4s ease-in-out infinite;
+/* Spring pop */
+.spring-pop { animation: spring-pop 0.4s var(--ease-spring) both; }
+
+/* Float */
+.animate-float { animation: float 5s ease-in-out infinite; }
+.animate-float-delayed { animation: float 5s ease-in-out 1.2s infinite; }
+
+/* Marquee */
+.marquee-track {
+  animation: marquee 40s linear infinite;
 }
-.animate-float-delayed {
-  animation: float 4s ease-in-out 1s infinite;
+.marquee-paused:hover .marquee-track {
+  animation-play-state: paused;
 }
 
 /* Skeleton shimmer */
@@ -223,68 +255,120 @@
   background: linear-gradient(
     90deg,
     color-mix(in oklch, var(--muted) 100%, transparent) 25%,
-    color-mix(in oklch, var(--muted-foreground) 8%, var(--muted)) 50%,
+    color-mix(in oklch, var(--muted-foreground) 10%, var(--muted)) 50%,
     color-mix(in oklch, var(--muted) 100%, transparent) 75%
   );
   background-size: 200% 100%;
-  animation: shimmer 2s linear infinite;
+  animation: shimmer 1.8s linear infinite;
 }
 
-/* Card hover lift — sutil, não exagerado */
+/* Tátil — botões que "afundam" (t3code tactile) */
+.tactile {
+  transition:
+    transform 0.15s var(--ease-spring),
+    box-shadow 0.15s var(--ease-out),
+    background-color 0.15s var(--ease-out),
+    border-color 0.15s var(--ease-out);
+}
+.tactile:active {
+  transform: scale(0.96) translateY(1px);
+}
+
+/* Card hover — levitação sutil */
 .card-hover {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    transform 0.25s var(--ease-spring),
+    box-shadow 0.25s var(--ease-out),
+    border-color 0.25s var(--ease-out);
 }
 .card-hover:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px color-mix(in oklch, var(--foreground) 6%, transparent);
+  transform: translateY(-3px);
+  box-shadow: 0 8px 30px color-mix(in oklch, var(--foreground) 4%, transparent),
+              0 0 0 1px color-mix(in oklch, var(--ring) 8%, transparent);
 }
 
-/* Grid pattern para backgrounds (de uiverse.io) */
+/* Card glow — para cards em destaque */
+.card-glow {
+  box-shadow: 0 0 0 1px color-mix(in oklch, var(--ring) 15%, transparent),
+              0 4px 20px color-mix(in oklch, var(--ring) 6%, transparent);
+}
+
+/* Grid pattern */
 .bg-grid {
   background-image:
-    linear-gradient(to right, color-mix(in oklch, var(--border) 50%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in oklch, var(--border) 50%, transparent) 1px, transparent 1px);
-  background-size: 32px 32px;
+    linear-gradient(to right, color-mix(in oklch, var(--border) 40%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in oklch, var(--border) 40%, transparent) 1px, transparent 1px);
+  background-size: 40px 40px;
 }
 
-/* Dot pattern — mais sutil que grid */
+/* Dot pattern */
 .bg-dots {
   background-image: radial-gradient(
     circle,
-    color-mix(in oklch, var(--muted-foreground) 15%, transparent) 1px,
+    color-mix(in oklch, var(--muted-foreground) 12%, transparent) 1px,
     transparent 1px
   );
-  background-size: 24px 24px;
+  background-size: 28px 28px;
 }
 
-/* Glow button — para CTA principal da landing */
-.btn-glow {
-  position: relative;
-  transition: box-shadow 0.3s ease;
-}
-.btn-glow:hover {
-  box-shadow: 0 0 20px color-mix(in oklch, var(--primary) 15%, transparent);
-}
+/* Badge pulse */
+.badge-pulse { animation: pulse-soft 2.5s ease-in-out infinite; }
 
-/* Badge pulse — para status ativos/em andamento */
-.badge-pulse {
-  animation: pulse-soft 2s ease-in-out infinite;
-}
-
-/* Input focus glow — mais visível que o default */
+/* Input glow */
 .input-glow:focus-visible {
   border-color: var(--ring);
-  box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 12%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 10%, transparent);
 }
 
-/* Smooth transitions globais para elementos interativos */
-button, a, [role="button"] {
-  transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+/* Scrollbar dark */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: color-mix(in oklch, var(--muted-foreground) 25%, transparent);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: color-mix(in oklch, var(--muted-foreground) 40%, transparent);
 }
 
-/* Active state feedback para mobile */
+/* Selection */
+::selection {
+  background: color-mix(in oklch, var(--primary) 25%, transparent);
+  color: var(--foreground);
+}
+
+/* Focus visible — sempre visível */
+:focus-visible {
+  outline: 2px solid color-mix(in oklch, var(--ring) 60%, transparent);
+  outline-offset: 2px;
+}
+
+/* Smooth global para elementos interativos */
+button, a, [role="button"], input, select, textarea {
+  transition: color 0.15s var(--ease-out),
+              background-color 0.15s var(--ease-out),
+              border-color 0.15s var(--ease-out),
+              transform 0.15s var(--ease-spring),
+              box-shadow 0.2s var(--ease-out);
+}
+
+/* Touch feedback */
 @media (pointer: coarse) {
   button:active, a:active, [role="button"]:active {
     transform: scale(0.97);
+  }
+}
+
+/* Reduced motion — acessibilidade */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }

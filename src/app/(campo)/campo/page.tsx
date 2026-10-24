@@ -10,7 +10,6 @@ import Link from "next/link";
 
 import { EmptyState } from "@/components/empty-state";
 import { StatusBadge } from "@/components/status-badge";
-import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { firstName, formatDate } from "@/lib/format";
 import {
@@ -32,13 +31,16 @@ export default async function FieldHomePage() {
   const now = new Date();
 
   const activeCount = workOrders.filter(
-    (wo) => wo.status === "OPEN" || wo.status === "IN_PROGRESS" || wo.status === "WAITING_PARTS",
+    (wo) =>
+      wo.status === "OPEN" ||
+      wo.status === "IN_PROGRESS" ||
+      wo.status === "WAITING_PARTS",
   ).length;
 
   return (
     <div className="flex flex-col gap-5">
       {/* Header */}
-      <div className="animate-fade-up">
+      <div className="cinematic-in">
         <p className="text-sm text-muted-foreground">Olá, {firstName(user.name)}</p>
         <h1 className="text-2xl font-semibold tracking-tight">Meu dia</h1>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -50,76 +52,82 @@ export default async function FieldHomePage() {
         </p>
       </div>
 
-      {/* Empty state */}
+      {/* Lista de OS */}
       {workOrders.length === 0 ? (
         <EmptyState
-          className="animate-fade-up-1"
+          className="cinematic-in-1"
           icon={CheckCircle2}
           title="Tudo em ordem por aqui"
           description="Quando uma OS for atribuída a você, ela aparece nesta tela."
         />
       ) : (
         <ul className="flex flex-col gap-3">
-          {workOrders.map((workOrder, i) => {
+          {workOrders.map((wo, i) => {
             const overdue =
-              workOrder.dueAt !== null &&
-              workOrder.dueAt < now &&
-              workOrder.status !== "DONE" &&
-              workOrder.status !== "CANCELED";
+              wo.dueAt !== null &&
+              wo.dueAt < now &&
+              wo.status !== "DONE" &&
+              wo.status !== "CANCELED";
 
             return (
-              <li key={workOrder.id} className={`animate-fade-up-${Math.min(i + 1, 4)}`}>
-                <Card className={overdue ? "border-red-200 dark:border-red-900" : undefined}>
+              <li key={wo.id} className={`cinematic-in-${Math.min(i + 1, 4)}`}>
+                <Card
+                  className={`card-hover border-border/60 ${
+                    overdue ? "border-red-500/30" : ""
+                  }`}
+                >
                   <CardContent className="flex flex-col gap-3">
                     <div className="flex items-start justify-between gap-3">
                       <div className="min-w-0">
                         <p className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
                           <ClipboardList aria-hidden className="size-3.5" />
-                          OS #{workOrder.number}
+                          OS #{wo.number}
                         </p>
-                        <p className="mt-1 font-semibold">{workOrder.title}</p>
+                        <p className="mt-1 font-semibold">{wo.title}</p>
                         <p className="mt-1 flex items-center gap-1 text-sm text-muted-foreground">
                           <MapPin aria-hidden className="size-3.5 shrink-0" />
-                          {workOrder.client.name} · {workOrder.site.name}
+                          {wo.client.name} · {wo.site.name}
                         </p>
-                        {workOrder.asset ? (
+                        {wo.asset ? (
                           <p className="text-sm text-muted-foreground">
-                            {workOrder.asset.tag} — {workOrder.asset.name}
+                            {wo.asset.tag} — {wo.asset.name}
                           </p>
                         ) : null}
                       </div>
                       <StatusBadge
-                        tone={workOrderStatusTone[workOrder.status]}
+                        tone={workOrderStatusTone[wo.status]}
                         pulse={
-                          workOrder.status === "IN_PROGRESS" ||
-                          workOrder.status === "WAITING_PARTS"
+                          wo.status === "IN_PROGRESS" ||
+                          wo.status === "WAITING_PARTS"
                         }
                       >
-                        {workOrderStatusLabels[workOrder.status]}
+                        {workOrderStatusLabels[wo.status]}
                       </StatusBadge>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2 text-sm">
-                      <StatusBadge tone={priorityTone[workOrder.priority]}>
-                        {workOrderPriorityLabels[workOrder.priority]}
+                      <StatusBadge tone={priorityTone[wo.priority]}>
+                        {workOrderPriorityLabels[wo.priority]}
                       </StatusBadge>
                       <span
                         className={`inline-flex items-center gap-1 ${
-                          overdue ? "font-medium text-red-600 dark:text-red-400" : "text-muted-foreground"
+                          overdue
+                            ? "font-medium text-red-400"
+                            : "text-muted-foreground"
                         }`}
                       >
                         <Clock aria-hidden className="size-3.5" />
-                        {workOrder.dueAt
-                          ? `${formatDate(workOrder.dueAt)}${overdue ? " · atrasada" : ""}`
+                        {wo.dueAt
+                          ? `${formatDate(wo.dueAt)}${overdue ? " · atrasada" : ""}`
                           : "Sem prazo"}
                       </span>
                     </div>
 
                     <Link
-                      href={`/campo/os/${workOrder.id}`}
-                      className={`${buttonVariants({ size: "lg" })} group w-full`}
+                      href={`/campo/os/${wo.id}`}
+                      className="tactile group inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary/90"
                     >
-                      {workOrder.status === "OPEN" ? "Iniciar atendimento" : "Continuar OS"}
+                      {wo.status === "OPEN" ? "Iniciar atendimento" : "Continuar OS"}
                       <ChevronRight
                         aria-hidden
                         className="size-4 transition-transform group-hover:translate-x-0.5"
